@@ -4,6 +4,7 @@ const express = require('express')
 const socketIo = require('socket.io')
 
 var {generateMessage} = require('./utils/message')
+var {realString} = require('./utils/validation')
 const app = express()
 const port = process.env.PORT || 3000;
 const server = http.createServer(app)
@@ -18,7 +19,13 @@ io.on('connection', (socket) => {
 
       socket.broadcast.emit('newMessage', generateMessage('Admin', 'New User joined'))
 
+      socket.on('join', (params, cb) => {
+            if (!realString(params.name) || !realString(params.room)){
+                  cb('Name and room name are required')
+            }
 
+            cb()
+      })
 
       socket.on('createMessage', (message, cb) => {
             console.log('createMessage', message); 

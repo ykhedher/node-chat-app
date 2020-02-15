@@ -34,6 +34,14 @@ socket.on('disconnect', () => {
       console.log('Disconnected from server')
 });
 
+socket.on('updateUserList', (users) => {
+      var ol = jQuery('<ol></ol>');
+      users.forEach((user) => {
+            ol.append(jQuery('<li></li>').text(user))
+      });
+      jQuery('#users').html(ol);
+})
+
 socket.on('newMessage', (message) => {
       var formatedTime = moment(message.createdAt).format('h:mm a')
       var template = jQuery('#message-template').html();
@@ -44,11 +52,6 @@ socket.on('newMessage', (message) => {
       });
       jQuery('#messages').append(html);
       scrollToBottom()
-      // var formatedTime = moment(message.createdAt).format('h:mm a')
-      // var li = jQuery('<li></li>');
-      // li.text(`${message.from} ${formatedTime}: ${message.text}`);
-
-      // jQuery('#messages').append(li);
 }) 
 
 
@@ -76,7 +79,6 @@ jQuery('#message-form').on('submit', (e) => {
       send.prop('disabled', true);
 
       socket.emit('createMessage', {
-            from: 'User',
             text: messageTextbox.val()
       }, () => {
             messageTextbox.val('');
